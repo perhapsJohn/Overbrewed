@@ -237,6 +237,7 @@ body {
 // pixel ratio (a 3x screen would render the kitchen at 9x the pixels for
 // little gain). ?pack=mobile / ?pack=desktop forces a pack (testing).
 const OB_QUERY = new URLSearchParams(location.search);
+let OB_TOUCHDEBUG = false;
 const OB_PHONE = (function () {
 	const forced = OB_QUERY.get('pack');
 	if (forced === 'mobile' || forced === 'desktop') { return forced === 'mobile'; }
@@ -254,11 +255,11 @@ const OB_PHONE = (function () {
 		</script>
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27965692,"index.wasm":37686550},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27966540,"index.wasm":37686550},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const OB_PACK = OB_PHONE ? 'index.mobile.pck' : 'index.pck';  // phones never download the desktop pack
-if (GODOT_CONFIG.fileSizes && '16820264' !== 'OB_' + 'MOBILE_PCK_SIZE') {
-	GODOT_CONFIG.fileSizes['index.mobile.pck'] = Number('16820264');
+if (GODOT_CONFIG.fileSizes && '16821112' !== 'OB_' + 'MOBILE_PCK_SIZE') {
+	GODOT_CONFIG.fileSizes['index.mobile.pck'] = Number('16821112');
 }
 const OB_ART = '' === 'OB_' + 'ART_FILES' ? [] : ''.split(',').filter((s) => s);
 // The page URL carries the game's dev flags for scripted checks, e.g.
@@ -267,7 +268,7 @@ const OB_ART = '' === 'OB_' + 'ART_FILES' ? [] : ''.split(',').filter((s) => s);
 // ?quality=phone&qset=aa:0 (core/quality.gd) and ?room=CODE (the Online
 // addon) are read by the game itself.
 const OB_ARGS = (function () {
-	const allowed = ['screen', 'level', 'mode', 'bots', 'autoplay', 'seed', 'time-scale', 'no-backdrop', 'probe', 'crew', 'gremlins', 'role', 'diff'];
+	const allowed = ['screen', 'level', 'mode', 'bots', 'autoplay', 'seed', 'time-scale', 'no-backdrop', 'probe', 'crew', 'gremlins', 'role', 'diff', 'touchdebug'];
 	const user = [];
 	for (const k of allowed) {
 		if (OB_QUERY.has(k)) { user.push('--' + k + '=' + (OB_QUERY.get(k) || '1')); }
@@ -350,6 +351,25 @@ const engine = new Engine(GODOT_CONFIG);
 	document.addEventListener('dblclick', (e) => e.preventDefault());
 	document.addEventListener('touchmove', (e) => { if (e.touches.length > 1) { e.preventDefault(); } }, { passive: false });
 	document.addEventListener('wheel', (e) => { if (e.ctrlKey) { e.preventDefault(); } }, { passive: false });
+
+	// ?touchdebug=1: what the browser delivers, before the engine sees it (phones / tablets)
+	if (OB_QUERY.has('touchdebug')) {
+		const box = document.createElement('div');
+		box.style.cssText = 'position:fixed;left:4px;top:4px;z-index:99;font:12px monospace;color:#0f0;background:rgba(0,0,0,.7);padding:4px 6px;pointer-events:none;white-space:pre';
+		document.body.appendChild(box);
+		const n = { touchstart: 0, touchmove: 0, touchend: 0, touchcancel: 0, pointerdown: 0, pointermove: 0 };
+		let lastXY = '', lastType = '', pt = '';
+		const show = () => { box.textContent = 'page: start ' + n.touchstart + ' move ' + n.touchmove + ' end ' + n.touchend + ' cancel ' + n.touchcancel + '\npointer: down ' + n.pointerdown + ' move ' + n.pointermove + ' type ' + pt + '\nlast ' + lastType + ' ' + lastXY + '  dpr ' + devicePixelRatio + '  ua ' + (navigator.userAgent.includes('Mac') ? 'Mac' : 'mobile') + ' touchpts ' + navigator.maxTouchPoints; };
+		Object.keys(n).forEach((k) => document.addEventListener(k, (e) => {
+			n[k]++; lastType = k;
+			const t = e.changedTouches ? e.changedTouches[0] : e;
+			if (t) { lastXY = Math.round(t.clientX) + ',' + Math.round(t.clientY) + (e.changedTouches ? ' id ' + t.identifier : ''); }
+			if (e.pointerType) { pt = e.pointerType; }
+			show();
+		}, { capture: true, passive: true }));
+		show();
+		OB_TOUCHDEBUG = true;
+	}
 
 	const missing = Engine.getMissingFeatures({ threads: GODOT_THREADS_ENABLED });
 	if (missing.length !== 0) {
