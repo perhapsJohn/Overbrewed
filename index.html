@@ -254,11 +254,11 @@ const OB_PHONE = (function () {
 		</script>
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27963196,"index.wasm":37686550},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27965692,"index.wasm":37686550},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const OB_PACK = OB_PHONE ? 'index.mobile.pck' : 'index.pck';  // phones never download the desktop pack
-if (GODOT_CONFIG.fileSizes && '16817768' !== 'OB_' + 'MOBILE_PCK_SIZE') {
-	GODOT_CONFIG.fileSizes['index.mobile.pck'] = Number('16817768');
+if (GODOT_CONFIG.fileSizes && '16820264' !== 'OB_' + 'MOBILE_PCK_SIZE') {
+	GODOT_CONFIG.fileSizes['index.mobile.pck'] = Number('16820264');
 }
 const OB_ART = '' === 'OB_' + 'ART_FILES' ? [] : ''.split(',').filter((s) => s);
 // The page URL carries the game's dev flags for scripted checks, e.g.
@@ -267,7 +267,7 @@ const OB_ART = '' === 'OB_' + 'ART_FILES' ? [] : ''.split(',').filter((s) => s);
 // ?quality=phone&qset=aa:0 (core/quality.gd) and ?room=CODE (the Online
 // addon) are read by the game itself.
 const OB_ARGS = (function () {
-	const allowed = ['screen', 'level', 'mode', 'bots', 'autoplay', 'seed', 'time-scale', 'no-backdrop'];
+	const allowed = ['screen', 'level', 'mode', 'bots', 'autoplay', 'seed', 'time-scale', 'no-backdrop', 'probe', 'crew', 'gremlins', 'role', 'diff'];
 	const user = [];
 	for (const k of allowed) {
 		if (OB_QUERY.has(k)) { user.push('--' + k + '=' + (OB_QUERY.get(k) || '1')); }
