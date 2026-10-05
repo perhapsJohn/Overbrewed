@@ -255,11 +255,17 @@ const OB_PHONE = (function () {
 		</script>
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27966540,"index.wasm":37686550},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27966844,"index.wasm":37686550},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
-const OB_PACK = OB_PHONE ? 'index.mobile.pck' : 'index.pck';  // phones never download the desktop pack
-if (GODOT_CONFIG.fileSizes && '16821112' !== 'OB_' + 'MOBILE_PCK_SIZE') {
-	GODOT_CONFIG.fileSizes['index.mobile.pck'] = Number('16821112');
+// ?b=<build> on the pack: every build is a new URL, so no browser keeps running an old game
+const OB_BUILD = 'f1c07b8284' === 'OB_' + 'BUILD_ID' ? '' : 'f1c07b8284';
+const OB_PACK_FILE = OB_PHONE ? 'index.mobile.pck' : 'index.pck';  // phones never download the desktop pack
+const OB_PACK = OB_BUILD ? OB_PACK_FILE + '?b=' + OB_BUILD : OB_PACK_FILE;
+if (GODOT_CONFIG.fileSizes && '16821416' !== 'OB_' + 'MOBILE_PCK_SIZE') {
+	GODOT_CONFIG.fileSizes['index.mobile.pck'] = Number('16821416');
+}
+if (GODOT_CONFIG.fileSizes && OB_BUILD) {
+	GODOT_CONFIG.fileSizes[OB_PACK] = GODOT_CONFIG.fileSizes[OB_PACK_FILE];
 }
 const OB_ART = '' === 'OB_' + 'ART_FILES' ? [] : ''.split(',').filter((s) => s);
 // The page URL carries the game's dev flags for scripted checks, e.g.
